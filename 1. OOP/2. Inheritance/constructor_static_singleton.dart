@@ -31,6 +31,16 @@ void main() {
   Student student1 = Student();
   Student student2 = Student();
 
+  OldStudent oldStuendt = OldStudent('name');
+  OldStudent oldStudent2 = OldStudent("name2");
+  print(oldStudent2.name);
+  print(
+    oldStudent2.randomValue,
+  ); //we get errror here because random is on class level
+  //WE CANT ACCESS THE RANDOM BY CREATING OBJECT BECASE ITS IN CLASS level
+
+  print(OldStudent.randomValue); //But we can access using this
+
   // print(student1.hashCode == student2.hashCode);
 
   int a = 10;
