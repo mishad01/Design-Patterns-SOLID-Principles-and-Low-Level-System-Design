@@ -356,3 +356,18 @@ void main() {
 - **Compile-time polymorphism** in Dart = named/optional parameters (no overloading).
 - **Runtime polymorphism** = method overriding (`@override`) + dynamic dispatch.
 - `@override` is an annotation — metadata that guides the Dart analyser, not the runtime.
+
+Key Takeaways
+
+- **Static:** Use for global constants and utility methods that don't require instance
+state.
+
+- **Factory:** Use to control the instantiation process (caching, polymorphism).
+
+- **Singleton:** A pattern to restrict a class to exactly one instance.
+Mixins: A way to reuse code across multiple class hierarchies (Capabilities).
+
+- **Extensions:** Add new methods to existing types (even built-in ones) keeping
+code clean.
+
+- **Design:** Prefer composition (Mixins) over deep inheritance trees.
