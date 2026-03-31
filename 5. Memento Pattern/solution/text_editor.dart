@@ -2,6 +2,8 @@
 // or formatting. The editor stores snapshots of its state (text content)
 //after each change, enabling the user to revert to any previous state.
 
+import 'editor_memento.dart';
+
 class TextEditor {
   String? content;
 
@@ -11,5 +13,15 @@ class TextEditor {
 
   String getContent() {
     return content!;
+  }
+
+  //save the current state of editor
+  EditorMemento save() {
+    return EditorMemento(content!);
+  }
+
+  //Restore (Momento -> update the state of the current editor)
+  void restore(EditorMemento memento) {
+    content = memento.getContent();
   }
 }

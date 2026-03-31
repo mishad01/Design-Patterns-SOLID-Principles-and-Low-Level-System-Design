@@ -1,3 +1,5 @@
+//Memento class: Stoes the intenral state of the TextEditor.
+
 class EditorMemento {
   String content;
 
