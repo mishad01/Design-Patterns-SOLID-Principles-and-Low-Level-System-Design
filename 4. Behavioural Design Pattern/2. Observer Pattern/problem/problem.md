@@ -10,7 +10,7 @@ When the temperature changes, the Weather Station directly tells the Phone App a
 
 This means the Weather Station is **tightly tied** (tightly coupled) to the Phone and the TV.
 
-![alt text](../img/Screenshot%202026-04-01%20at%2010.54.03%E2%80%AFAM.png)
+![alt text](../img/problem.png)
 
 ### The Problem with Extension
 
