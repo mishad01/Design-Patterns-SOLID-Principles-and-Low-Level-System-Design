@@ -13,6 +13,7 @@ Think of it like a **YouTube channel**. You subscribe once. Every time the chann
 
 ## The Problem
 
+
 Look at the code in `problem/without_observer_pattern.dart`.
 
 We have a `WeatherStation` that measures temperature. We also have a `DisplayDevice` (like a screen) that shows that temperature.
@@ -38,6 +39,12 @@ class WeatherStation {
 This breaks the **Open/Closed Principle**: your code should be open to adding new things, but closed to changing existing working code.
 
 ![Problem diagram](img/problem.png)
+
+**OOP Problem:** `WeatherStation` is tightly coupled to `DisplayDevice` — it directly holds and calls a specific class, making it hard to swap or extend without touching existing code.
+
+ **SOLID Problem (OCP):** Adding a new device (like a `TVDevice`) forces you to open and modify `WeatherStation`, violating the Open/Closed Principle — classes should be open for extension, closed for modification.
+
+ **SOLID Problem (DIP):** `WeatherStation` depends on a concrete class (`DisplayDevice`) instead of an abstraction, violating the Dependency Inversion Principle.
 
 ---
 

@@ -11,6 +11,10 @@ It secretly saved a copy of the old state. That saved copy is called a **Memento
 
 ## The Problem
 
+> **OOP Problem:** Encapsulation is broken — to save state externally, you'd have to expose the editor's internal fields, violating the principle that an object controls its own data.
+>
+> **SOLID Problem (SRP):** If the editor also managed its own undo history, it would have two responsibilities: editing text *and* tracking history. These should be separate concerns.
+
 We had a simple text editor:
 
 ```dart
