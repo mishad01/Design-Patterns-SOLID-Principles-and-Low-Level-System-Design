@@ -11,6 +11,12 @@ You type in your destination. Then you pick *how* you want to travel — by car,
 
 The Strategy Pattern lets you swap out the *how* of doing something — without touching the rest of the code.
 
+## Structure
+
+- **Strategy:** Interface that all algorithms/behaviors must implement.
+- **Concrete Strategy:** A specific implementation of the behavior (e.g. CreditCard, DebitCard).
+- **Context:** Holds a Strategy and delegates work to it. Can swap the strategy at runtime.
+
 ---
 
 ## The Problem

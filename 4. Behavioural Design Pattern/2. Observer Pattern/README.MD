@@ -9,6 +9,12 @@ Think of it like a **YouTube channel**. You subscribe once. Every time the chann
 - The **channel** = Subject (also called Publisher)
 - The **subscribers** = Observers
 
+## Structure
+
+- **Subject:** The object being observed. Maintains a list of observers and notifies them when it changes.
+- **Observer:** Interface that all subscribers implement. Has an `update()` method.
+- **Concrete Observer:** The actual subscriber classes that respond to updates from the Subject.
+
 ---
 
 ## The Problem

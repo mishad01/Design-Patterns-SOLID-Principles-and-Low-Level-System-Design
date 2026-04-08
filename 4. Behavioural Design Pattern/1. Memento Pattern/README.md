@@ -7,6 +7,12 @@ Think of it like the **undo button** in any app (like Google Docs or VS Code).
 When you press Ctrl+Z, the app goes back to what it was before. How does it do that?
 It secretly saved a copy of the old state. That saved copy is called a **Memento**.
 
+## Structure
+
+- **Originator:** The object whose state we want to save. Creates a Memento and restores itself from one.
+- **Memento:** Stores a snapshot of the Originator's state. Only the Originator can read it.
+- **Caretaker:** Holds the history of Mementos. Decides when to save and when to undo — never opens a Memento.
+
 ---
 
 ## The Problem
