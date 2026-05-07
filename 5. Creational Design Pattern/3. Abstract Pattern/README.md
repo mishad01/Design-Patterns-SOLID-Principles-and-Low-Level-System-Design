@@ -2,14 +2,14 @@
 
 ## What is it?
 
-Think of it like ordering a **furniture suite from a brand**.
+Think of it like ordering a **meal combo at a fast food chain**.
 
-When you walk into IKEA and pick the "STOCKHOLM" collection, you get a matching sofa, chair, and table — all in the same style. You don't pick a sofa from one collection and a chair from another and hope they match. The collection is the factory: it guarantees that every product it creates belongs to the same family.
+When you walk into McDonald's and order a combo, you get a burger, fries, and a drink — all from McDonald's. You don't get a KFC burger with McDonald's fries and a Subway drink. The chain guarantees everything in your meal belongs together.
 
-- The **IKEA brand** = Abstract Factory (`UIFactory` — declares what products can be created)
-- The **STOCKHOLM collection** = Concrete Factory (`WindowsUIFactory`, `MacOSUIFactory` — produces one consistent family)
-- The **sofa / chair / table** = Abstract Products (`Button`, `ScrollBar` — the interfaces)
-- The **STOCKHOLM sofa** = Concrete Products (`WindowsButton`, `MacOSButton` — the actual implementations)
+- The **fast food chain brand** = Abstract Factory (`RestaurantFactory` — declares what products can be created)
+- **McDonald's / KFC** = Concrete Factory (`McDonaldsFactory`, `KFCFactory` — produces one consistent family)
+- The **burger / fries / drink** = Abstract Products (`Burger`, `Fries`, `Drink` — the interfaces)
+- **McBurger / KFCBurger** = Concrete Products (the actual implementations)
 
 The Abstract Factory Pattern provides an interface for creating families of related objects without specifying their concrete classes — and guarantees the products are compatible with each other.
 
@@ -18,7 +18,7 @@ The Abstract Factory Pattern provides an interface for creating families of rela
 - **Abstract Factory (interface):** Declares methods for creating each product in the family.
 - **Concrete Factory:** Implements the factory interface to produce one consistent product family.
 - **Abstract Product (interface):** Declares the contract for each type of product.
-- **Concrete Product:** The actual platform-specific implementation.
+- **Concrete Product:** The actual implementation for a specific family.
 - **Client:** Uses only the abstract factory and abstract product interfaces — never the concrete classes.
 
 ---
@@ -26,76 +26,64 @@ The Abstract Factory Pattern provides an interface for creating families of rela
 ## The Problem
 
 ```dart
-class WindowsButton {
-  void render() => print('Rendering Windows button');
+class McBurger {
+  void prepare() => print('Preparing McBurger');
 }
 
-class WindowsScrollBar {
-  void render() => print('Rendering Windows scrollbar');
+class McFries {
+  void prepare() => print('Preparing McFries');
 }
 
-class MacOSButton {
-  void render() => print('Rendering Mac button');
+class KFCBurger {
+  void prepare() => print('Preparing KFC Burger');
 }
 
-class MacOSScrollBar {
-  void render() => print('Rendering Mac scrollbar');
+class KFCFries {
+  void prepare() => print('Preparing KFC Fries');
 }
 
-class Application {
-  void renderUI(String platform) {
-    if (platform == 'windows') {
-      WindowsButton().render();
-      WindowsScrollBar().render();
+class Customer {
+  void orderMeal(String restaurant) {
+    if (restaurant == 'mcdonalds') {
+      McBurger().prepare();
+      McFries().prepare();
     } else {
-      MacOSButton().render();
-      MacOSScrollBar().render(); // what stops someone from mixing MacOS button with Windows scrollbar?
+      KFCBurger().prepare();
+      KFCFries().prepare();
+      // what stops someone from doing McBurger() + KFCFries() by mistake?
     }
   }
 }
-```
-
-```
-graph TD
-    App["Application"]
-    WB["Windows Button"]
-    WS["Windows ScrollBar"]
-    MB["MacOS Button"]
-    MS["MacOS ScrollBar"]
-    App -- directly creates --> WB
-    App -- directly creates --> WS
-    App -- directly creates --> MB
-    App -- directly creates --> MS
 ```
 
 **What goes wrong:**
 
 | Problem | Why it hurts |
 |---|---|
-| No consistency guarantee | Nothing stops mixing `MacOSButton` with `WindowsScrollBar` — mismatched UI families compile fine |
-| OCP violated | Adding a Linux platform requires modifying `Application`'s `if-else` chain |
-| SRP violated | `Application` owns the creation logic for every platform instead of delegating |
-| Scalability | Each new platform or product type multiplies the number of places that need updating |
+| No consistency guarantee | Nothing stops mixing `McBurger` with `KFCFries` — mismatched families compile fine |
+| OCP violated | Adding Burger King requires opening and modifying `Customer`'s if-else chain |
+| SRP violated | `Customer` owns the creation logic for every restaurant instead of delegating it |
+| Scalability | Each new restaurant or product type multiplies the places that need updating |
 
-> **OOP Problem (Encapsulation):** Object creation logic is scattered inside `Application` instead of being owned by dedicated factory classes.
+> **OOP Problem (Encapsulation):** Object creation logic is scattered inside `Customer` instead of being owned by dedicated factory classes.
 >
-> **SOLID Problem (OCP):** Adding a new platform means opening and modifying `Application` — it is not closed for modification.
+> **SOLID Problem (OCP):** Adding a new restaurant means opening and modifying `Customer` — it is not closed for modification.
 >
-> **SOLID Problem (SRP):** `Application` is doing two jobs — rendering the UI AND deciding how to construct each platform's components.
+> **SOLID Problem (SRP):** `Customer` is doing two jobs — ordering the meal AND deciding how to construct each restaurant's products.
 
 ---
 
 ## The Solution — Abstract Factory Pattern
 
-We introduce a `UIFactory` interface that declares how to create each product. Each platform gets its own concrete factory. `Application` only ever talks to the interface — it never knows which platform is actually running.
+We introduce a `RestaurantFactory` interface that declares how to create each product. Each restaurant gets its own concrete factory. `Customer` only ever talks to the interface — it never knows which restaurant is actually running.
 
 | Role | In Our Example | What it does |
 |---|---|---|
-| **Abstract Factory** | `UIFactory` | Declares `createButton()` and `createScrollBar()` |
-| **Concrete Factory** | `WindowsUIFactory`, `MacOSUIFactory` | Returns the right family of products |
-| **Abstract Product** | `Button`, `ScrollBar` | Declares the product interface |
-| **Concrete Product** | `WindowsButton`, `MacOSButton`, etc. | The actual platform implementation |
-| **Client** | `Application` | Holds a `UIFactory` — never touches concrete classes |
+| **Abstract Factory** | `RestaurantFactory` | Declares `createBurger()`, `createFries()`, `createDrink()` |
+| **Concrete Factory** | `McDonaldsFactory`, `KFCFactory` | Returns the right family of products |
+| **Abstract Product** | `Burger`, `Fries`, `Drink` | Declares the product interface |
+| **Concrete Product** | `McBurger`, `KFCBurger`, etc. | The actual restaurant-specific implementation |
+| **Client** | `Customer` | Holds a `RestaurantFactory` — never touches concrete classes |
 
 ---
 
@@ -104,100 +92,124 @@ We introduce a `UIFactory` interface that declares how to create each product. E
 ### Step 1 — Create Abstract Product interfaces
 
 ```dart
-abstract class Button {
-  void render();
+abstract class Burger {
+  void prepare();
 }
 
-abstract class ScrollBar {
-  void render();
+abstract class Fries {
+  void prepare();
+}
+
+abstract class Drink {
+  void prepare();
 }
 ```
 
-> Every concrete product must fit one of these shapes. `Application` only ever knows these interfaces — not the Windows or Mac versions.
+> Every concrete product must fit one of these shapes. `Customer` only ever knows these interfaces — not `McBurger` or `KFCFries`.
 
 ---
 
 ### Step 2 — Create Concrete Products
 
 ```dart
-class WindowsButton implements Button {
+// McDonald's family
+class McBurger implements Burger {
   @override
-  void render() => print('Rendering Windows button');
+  void prepare() => print('Preparing McBurger');
 }
 
-class WindowsScrollBar implements ScrollBar {
+class McFries implements Fries {
   @override
-  void render() => print('Rendering Windows scrollbar');
+  void prepare() => print('Preparing McFries');
 }
 
-class MacOSButton implements Button {
+class McCola implements Drink {
   @override
-  void render() => print('Rendering Mac button');
+  void prepare() => print('Pouring McCola');
 }
 
-class MacOSScrollBar implements ScrollBar {
+// KFC family
+class KFCBurger implements Burger {
   @override
-  void render() => print('Rendering Mac scrollbar');
+  void prepare() => print('Preparing KFC Burger');
+}
+
+class KFCFries implements Fries {
+  @override
+  void prepare() => print('Preparing KFC Fries');
+}
+
+class KFCPepsi implements Drink {
+  @override
+  void prepare() => print('Pouring KFC Pepsi');
 }
 ```
 
-> Each class owns exactly one platform's behaviour for one product type.
+> Each class owns exactly one restaurant's behaviour for one product type.
 
 ---
 
 ### Step 3 — Create the Abstract Factory interface
 
 ```dart
-abstract class UIFactory {
-  Button createButton();
-  ScrollBar createScrollBar();
+abstract class RestaurantFactory {
+  Burger createBurger();
+  Fries createFries();
+  Drink createDrink();
 }
 ```
 
-> This is the contract. Any concrete factory must produce a `Button` and a `ScrollBar` — but the caller never knows which concrete type it gets back.
+> This is the contract. Any concrete factory must be able to produce a `Burger`, `Fries`, and `Drink` — but the caller never knows which concrete type it gets back.
 
 ---
 
 ### Step 4 — Create Concrete Factories
 
 ```dart
-class WindowsUIFactory implements UIFactory {
+class McDonaldsFactory implements RestaurantFactory {
   @override
-  Button createButton() => WindowsButton();
+  Burger createBurger() => McBurger();
 
   @override
-  ScrollBar createScrollBar() => WindowsScrollBar();
+  Fries createFries() => McFries();
+
+  @override
+  Drink createDrink() => McCola();
 }
 
-class MacOSUIFactory implements UIFactory {
+class KFCFactory implements RestaurantFactory {
   @override
-  Button createButton() => MacOSButton();
+  Burger createBurger() => KFCBurger();
 
   @override
-  ScrollBar createScrollBar() => MacOSScrollBar();
+  Fries createFries() => KFCFries();
+
+  @override
+  Drink createDrink() => KFCPepsi();
 }
 ```
 
-> Each factory guarantees that the products it creates belong to the same family. Mixing is impossible — `MacOSUIFactory` can only produce Mac products.
+> Each factory guarantees that the products it creates belong to the same family. Mixing is impossible — `KFCFactory` can only produce KFC products.
 
 ---
 
 ### Step 5 — Update the Client to depend on the interface
 
 ```dart
-class Application {
-  final UIFactory _factory;
+class Customer {
+  final RestaurantFactory factory;
 
-  Application(this._factory);
+  Customer(this.factory);
 
-  void renderUI() {
-    _factory.createButton().render();
-    _factory.createScrollBar().render();
+  void orderMeal() {
+    factory.createBurger().prepare();
+    factory.createFries().prepare();
+    factory.createDrink().prepare();
   }
 }
 ```
 
-> `Application` no longer knows about Windows or Mac. It only calls `createButton()` and `createScrollBar()` — whatever the factory returns is guaranteed to be compatible.
+> `Customer` no longer knows about McDonald's or KFC. It only calls `createBurger()`, `createFries()`, and `createDrink()` — whatever the factory returns is guaranteed to be from the same family.
 
 ---
 
@@ -205,13 +217,12 @@ class Application {
 
 ```dart
 void main() {
-  final UIFactory factory = WindowsUIFactory(); // swap to MacOSUIFactory() — nothing else changes
-  final app = Application(factory);
-  app.renderUI();
+  final customer = Customer(McDonaldsFactory()); // swap to KFCFactory() — nothing else changes
+  customer.orderMeal();
 }
 ```
 
-Want to switch platforms? Change one line. `Application` is untouched.
+Want to add Burger King? Create `BurgerKingBurger`, `BurgerKingFries`, `BurgerKingDrink`, and a `BurgerKingFactory`. `Customer` is completely untouched.
 
 ---
 
@@ -219,25 +230,25 @@ Want to switch platforms? Change one line. `Application` is untouched.
 
 | | Without Pattern | With Abstract Factory |
 |---|---|---|
-| Consistency guarantee | None — any component can be mixed with any other | Enforced — a factory only produces its own family |
-| Adding a new platform | Modify `Application`'s if-else chain | Add one new factory class |
-| Client knows about | Windows, Mac, Linux concrete classes | Only `UIFactory`, `Button`, `ScrollBar` |
-| OCP compliance | Violated — must open `Application` | Respected — extend by adding a new factory |
-| SRP compliance | `Application` handles creation logic | Each factory owns its own creation logic |
+| Consistency guarantee | None — any product can be mixed with any other | Enforced — a factory only produces its own family |
+| Adding a new restaurant | Modify `Customer`'s if-else chain | Add one new factory class |
+| Client knows about | `McBurger`, `KFCFries`, concrete classes | Only `RestaurantFactory`, `Burger`, `Fries`, `Drink` |
+| OCP compliance | Violated — must open `Customer` | Respected — extend by adding a new factory |
+| SRP compliance | `Customer` handles creation logic | Each factory owns its own creation logic |
 
 ---
 
 ## Key Insight
 
-The Abstract Factory Pattern solves two problems at once: it decouples the client from concrete classes, and it enforces product family consistency. The client never decides which concrete class to instantiate — the factory does. And because you can only get products from one factory at a time, you can never accidentally mix a Windows button with a Mac scrollbar.
+The Abstract Factory solves two problems at once: it decouples the client from concrete classes, and it enforces product family consistency. The customer never decides which concrete class to instantiate — the factory does. And because you can only get products from one factory at a time, you can never accidentally mix a McDonald's burger with KFC fries.
 
-This is the difference between a client that asks "which platform am I on?" at every step and one that simply says "give me a button" — and trusts the factory to return the right one.
+This is the difference between a customer who checks "which restaurant am I in?" at every step and one who simply says "give me a burger" — and trusts the factory to return the right one.
 
 ---
 
 ## Real-World Examples
 
-- **Cross-platform UI frameworks** — Flutter, Qt, and wxWidgets use abstract factories to produce platform-native widgets (buttons, text fields, dialogs) that match the OS.
+- **Cross-platform UI frameworks** — Flutter and Qt use abstract factories to produce platform-native widgets (buttons, dialogs) that match the OS.
 - **Database drivers** — A `DatabaseFactory` produces matching `Connection`, `Command`, and `Reader` objects for a specific database (MySQL, PostgreSQL, SQLite).
 - **Theme engines** — A `ThemeFactory` produces a consistent set of colours, fonts, and shapes for light or dark mode.
 - **Cloud provider SDKs** — An `InfrastructureFactory` creates matching compute, storage, and networking objects for AWS, GCP, or Azure.
@@ -248,7 +259,7 @@ This is the difference between a client that asks "which platform am I on?" at e
 
 | Need | Example |
 |---|---|
-| Products must be used together consistently | UI components that must match one platform's style |
-| The system should be independent of how products are created | `Application` should not know it's running on Windows |
-| You want to enforce family constraints at compile time | Prevent mixing Mac and Windows components |
-| Switching product families should require minimal code change | Swap `WindowsUIFactory` to `MacOSUIFactory` in one place |
+| Products must be used together consistently | Meal items that must all come from the same restaurant |
+| The system should be independent of how products are created | `Customer` should not need to know it's at McDonald's |
+| You want to enforce family constraints at compile time | Prevent mixing McDonald's and KFC products |
+| Switching product families should require minimal code change | Swap `McDonaldsFactory` to `KFCFactory` in one place |
